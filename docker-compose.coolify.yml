@@ -20,7 +20,7 @@ services:
       DB_PORT: "5432"
       DB_INIT_PASSWORD: "${DB_INIT_PASSWORD}"
       REDIS_URL: "${REDIS_URL}"
-      SECURE_SSL_REDIRECT: "${SECURE_SSL_REDIRECT:-1}"
+      SECURE_SSL_REDIRECT: "${SECURE_SSL_REDIRECT:-0}"
       AXES_PROXY_COUNT: "${AXES_PROXY_COUNT:-1}"
       TIME_ZONE: "${TIME_ZONE:-Asia/Kolkata}"
     volumes:
@@ -40,6 +40,8 @@ services:
           "-f",
           "-H",
           "Host: 127.0.0.1",
+          "-H",
+          "X-Forwarded-Proto: https",
           "http://127.0.0.1:8000/health/",
         ]
       interval: 30s
