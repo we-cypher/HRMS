@@ -31,12 +31,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 30s
       timeout: 30s
-      start_period: 300s
-      retries: 5
+      start_period: 600s
+      retries: 10
     expose:
       - "8000"
 
@@ -62,8 +63,15 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      web:
+        condition: service_healthy
+    # Image HEALTHCHECK curls :8000, which this process never binds.
+    # Coolify ignores healthcheck.disable and then restart-loops this service.
     healthcheck:
-      disable: true
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 1
     restart: unless-stopped
 
   db:
