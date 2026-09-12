@@ -218,7 +218,7 @@ def white_labelling_company(request):
             company = hq
 
         return {
-            "white_label_company_name": company.company if company else "WePeople",
+            "white_label_company_name": "WePeople",
             "white_label_company": company,
         }
     else:
