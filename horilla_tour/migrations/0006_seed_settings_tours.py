@@ -93,7 +93,7 @@ TOURS = [
             {
                 "sequence": 3,
                 "title": "Multi-company support",
-                "description": "Horilla supports multiple companies in a single instance. Each company has its own employees, leave balances, payroll and reports — fully isolated from each other.",
+                "description": "WePeople supports multiple companies in a single instance. Each company has its own employees, leave balances, payroll and reports — fully isolated from each other.",
                 "element_selector": "",
                 "side": "over",
                 "align": "start",

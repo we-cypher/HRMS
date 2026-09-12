@@ -1,4 +1,4 @@
-"""Single source of truth for the Horilla HR product version.
+"""Single source of truth for the WePeople HRMS product version.
 
 Keep in lockstep with release tags: the Docker publish workflow asserts that
 this string matches the git tag being built, so a mismatch fails the release

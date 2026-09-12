@@ -1,4 +1,4 @@
-"""HorillaUser authentication smoke tests."""
+"""WePeople user authentication smoke tests."""
 
 from django.contrib.auth import authenticate
 from django.test import Client, RequestFactory, TestCase

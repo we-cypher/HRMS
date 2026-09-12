@@ -1,4 +1,4 @@
-# Build and publish the official Horilla HR image to Docker Hub.
+# Build and publish the WePeople HRMS image to Docker Hub.
 #
 # docker-ci.yml is the PR gate and stays untouched; this is the release path.
 # It smoke-tests the built image before any push, so a broken image cannot be

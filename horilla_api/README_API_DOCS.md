@@ -1,6 +1,6 @@
-# Horilla API Documentation
+# WePeople API Documentation
 
-This document provides information on how to use and maintain the API documentation for Horilla HRMS.
+This document provides information on how to use and maintain the API documentation for WePeople HRMS.
 
 ## Accessing API Documentation
 

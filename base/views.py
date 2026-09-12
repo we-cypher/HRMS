@@ -1289,7 +1289,7 @@ class SettingsView(LoginRequiredMixin, RedirectView):
 def _permission_app_label(app_name):
     """
     Human label for permission UI module nav.
-    Uses AppConfig.verbose_name and drops a leading "Horilla" product prefix.
+    Uses AppConfig.verbose_name and drops any leading product prefix.
     """
     import re
 
@@ -2025,7 +2025,7 @@ def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
     white_labelling = getattr(settings, "WHITE_LABELLING", False)
     image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
-    company_name = "Horilla"
+    company_name = "WePeople"
 
     if white_labelling:
         hq = Company.objects.filter(hq=True).last()

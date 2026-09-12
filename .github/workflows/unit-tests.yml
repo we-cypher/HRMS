@@ -1,4 +1,4 @@
-# Smoke unit tests for the Horilla unit-test coverage program.
+# Smoke unit tests for the WePeople HRMS unit-test coverage program.
 # Expand UNIT_LABELS as more apps gain real suites.
 
 name: Unit Tests

@@ -218,12 +218,12 @@ def white_labelling_company(request):
             company = hq
 
         return {
-            "white_label_company_name": company.company if company else "Horilla",
+            "white_label_company_name": company.company if company else "WePeople",
             "white_label_company": company,
         }
     else:
         return {
-            "white_label_company_name": "Horilla",
+            "white_label_company_name": "WePeople",
             "white_label_company": None,
         }
 
@@ -235,7 +235,7 @@ def doc_base_url(request):
     white-labelled deployments.
     """
     return {
-        "DOC_BASE_URL": getattr(settings, "DOC_BASE_URL", "https://www.horilla.com")
+        "DOC_BASE_URL": getattr(settings, "DOC_BASE_URL", "https://www.wecypher.com")
     }
 
 

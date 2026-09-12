@@ -1,10 +1,9 @@
-# Horilla HR
+# WePeople HRMS
 
-Free and open source HR software. Recruitment, onboarding, attendance, leave, payroll, performance, assets and helpdesk in one Django application.
+Human Resource Management System. Recruitment, onboarding, attendance, leave, payroll, performance, assets and helpdesk in one Django application.
 
-- **Source:** https://github.com/horilla/horilla-hr
-- **Docs:** https://docs.horilla.com
-- **Website:** https://www.horilla.com
+- **Source:** https://github.com/we-cypher/HRMS
+- **Website:** https://www.wecypher.com
 - **License:** LGPL-2.1
 
 __NOTICE__
@@ -31,7 +30,7 @@ docker pull horilla/horilla-hr:__VERSION__
 
 ## Quick start
 
-Horilla needs PostgreSQL. The fastest way to a working instance is Compose:
+WePeople HRMS needs PostgreSQL. The fastest way to a working instance is Compose:
 
 ```yaml
 # compose.yaml

@@ -1,4 +1,4 @@
-# Coolify self-host stack for Horilla HR.
+# Coolify self-host stack for WePeople HRMS.
 # Deploy this file from Git. Put secrets in Coolify Environment — never commit .env.
 #
 # Coolify: New Resource → Docker Compose → this repo → compose file:

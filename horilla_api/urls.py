@@ -9,11 +9,11 @@ from horilla_api.schema import OrderedTagSchemaGenerator
 # Create schema view for Swagger and ReDoc
 schema_view = get_schema_view(
     openapi.Info(
-        title="Horilla API",
+        title="WePeople API",
         default_version="v1",
-        description="API documentation for Horilla HRMS. Click the 'Authorize' button at the top to authenticate.",
-        terms_of_service="https://www.horilla.com/terms/",
-        contact=openapi.Contact(email="support@horilla.com"),
+        description="API documentation for WePeople HRMS. Click the 'Authorize' button at the top to authenticate.",
+        terms_of_service="https://www.wecypher.com/terms/",
+        contact=openapi.Contact(email="support@wecypher.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=settings.DEBUG,

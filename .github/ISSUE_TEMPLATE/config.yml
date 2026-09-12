@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability
-    url: https://github.com/horilla/horilla-hr/security/advisories/new
+    url: https://github.com/we-cypher/HRMS/security/advisories/new
     about: Use GitHub Private Vulnerability Reporting only — do not open a public issue
-  - name: Horilla Community Support
-    url: https://github.com/horilla/horilla-hr/discussions
+  - name: WePeople Community Support
+    url: https://github.com/we-cypher/HRMS/discussions
     about: Ask questions or discuss features here
   - name: Documentation
-    url: https://docs.horilla.com
-    about: Check the official Horilla documentation
+    url: https://www.wecypher.com
+    about: Check the official WePeople documentation

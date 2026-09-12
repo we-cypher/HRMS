@@ -434,7 +434,7 @@ DJANGO_NOTIFICATIONS_CONFIG = {
 # ========================================
 # HORILLA-SPECIFIC SETTINGS
 # ========================================
-WHITE_LABELLING = False
+WHITE_LABELLING = True
 NESTED_SUBORDINATE_VISIBILITY = False
 TWO_FACTORS_AUTHENTICATION = False
 # When True, /ready/ returns 503 until run_scheduler has registered jobs.
