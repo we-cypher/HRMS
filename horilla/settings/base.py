@@ -234,6 +234,12 @@ else:
         }
     }
 
+# Django default CONN_MAX_AGE=0 opens a new TCP+auth handshake on every
+# request. Behind Docker/Postgres that is a large part of why pages feel
+# slower than a React SPA (which only fetches JSON after the first load).
+for _db in DATABASES.values():
+    _db.setdefault("CONN_MAX_AGE", env.int("CONN_MAX_AGE", default=60))
+
 # SQLite: enable WAL so reads (list/search) don't block session writes from
 # concurrent requests like notification polling.
 from django.db.backends.signals import connection_created
@@ -267,6 +273,10 @@ if REDIS_URL:
             "KEY_PREFIX": "horilla",
         }
     }
+    # Read sessions from Redis; still persist to the DB so a Redis restart
+    # does not log everyone out.
+    SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+    SESSION_CACHE_ALIAS = "default"
 
 # ========================================
 # STATIC & MEDIA FILES

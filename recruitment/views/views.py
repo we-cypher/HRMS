@@ -3418,9 +3418,16 @@ def delete_reject_reason(request):
     return HttpResponse(f"<script>{script}</script>")
 
 
-# Loaded once per worker process at import time (spaCy model load is slow;
-# never call spacy.load() inside a request-handling function).
-_resume_nlp = spacy.load("en_core_web_sm")
+# spaCy + en_core_web_sm is ~150–300MB. Loading it at import time meant every
+# gunicorn worker paid that cost on boot, even if nobody parses a resume.
+_resume_nlp = None
+
+
+def get_resume_nlp():
+    global _resume_nlp
+    if _resume_nlp is None:
+        _resume_nlp = spacy.load("en_core_web_sm")
+    return _resume_nlp
 
 
 def extract_text_with_font_info(pdf):
@@ -3646,7 +3653,7 @@ def extract_info(pdf):
 
     max_font_size = max(item["font_size"] for item in ranked_text)
     top_spans = [item for item in ranked_text if item["font_size"] == max_font_size]
-    name_doc = _resume_nlp(" ".join(item["text"] for item in top_spans))
+    name_doc = get_resume_nlp()(" ".join(item["text"] for item in top_spans))
     person_names = [ent.text for ent in name_doc.ents if ent.label_ == "PERSON"]
     if person_names:
         extracted_info["full_name"] = " ".join(person_names)
@@ -3668,7 +3675,7 @@ def extract_info(pdf):
 
     gpe_address_candidate = None
 
-    doc = _resume_nlp(full_text)
+    doc = get_resume_nlp()(full_text)
     for ent in doc.ents:
         if ent.label_ != "GPE":
             continue

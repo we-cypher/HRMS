@@ -13,13 +13,14 @@ def default_currency(request):
     """
     This method will return the currency
     """
-    if models.PayrollSettings.objects.first() is None:
+    settings = models.PayrollSettings.objects.first()
+    if settings is None:
         settings = models.PayrollSettings()
         settings.currency_symbol = "$"
         settings.company_id = getattr(request, "selected_company_instance", None)
         settings.save()
-    symbol = models.PayrollSettings.objects.first().currency_symbol
-    position = models.PayrollSettings.objects.first().position
+    symbol = settings.currency_symbol
+    position = settings.position
     return {
         "currency": request.session.get("currency", symbol),
         "position": request.session.get("position", position),

@@ -23,6 +23,7 @@ services:
       SECURE_SSL_REDIRECT: "${SECURE_SSL_REDIRECT:-0}"
       AXES_PROXY_COUNT: "${AXES_PROXY_COUNT:-1}"
       TIME_ZONE: "${TIME_ZONE:-Asia/Kolkata}"
+      GUNICORN_WORKERS: "${GUNICORN_WORKERS:-2}"
     volumes:
       - media:/app/media
       - staticfiles:/app/staticfiles

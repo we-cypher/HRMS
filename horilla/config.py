@@ -8,10 +8,16 @@ import importlib
 import logging
 
 from django.apps import apps
+from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
+from django.utils.translation import get_language
 
 logger = logging.getLogger(__name__)
+
+# Sidebar permission checks hit the DB for every menu item. Cache the built
+# menu for a short window so navigation is not rebuilt on every page load.
+_SIDEBAR_CACHE_TTL = 60
 
 
 def get_apps_in_base_dir():
@@ -25,7 +31,11 @@ def import_method(accessibility):
     return accessibility_method
 
 
-ALL_MENUS = {}
+def _sidebar_cache_key(request):
+    user_id = getattr(request.user, "pk", None) or "anon"
+    company = request.session.get("selected_company", "")
+    language = get_language() or "en"
+    return f"sidebar:{user_id}:{company}:{language}"
 
 
 def sidebar(request):
@@ -80,7 +90,8 @@ def sidebar(request):
                                 PermWrapper(request.user),
                             ):
                                 MENU["submenu"].append(submenu)
-        ALL_MENUS[request.session.session_key] = MENUS
+        return MENUS
+    return []
 
 
 def get_MENUS(request):
@@ -88,9 +99,16 @@ def get_MENUS(request):
     cached = getattr(request, "_horilla_menus", None)
     if cached is not None:
         return {"sidebar": cached}
-    ALL_MENUS[request.session.session_key] = []
-    sidebar(request)
-    menus = ALL_MENUS.get(request.session.session_key)
+
+    if request.user.is_anonymous:
+        request._horilla_menus = []
+        return {"sidebar": []}
+
+    cache_key = _sidebar_cache_key(request)
+    menus = cache.get(cache_key)
+    if menus is None:
+        menus = sidebar(request)
+        cache.set(cache_key, menus, _SIDEBAR_CACHE_TTL)
     request._horilla_menus = menus
     return {"sidebar": menus}
 

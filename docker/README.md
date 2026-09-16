@@ -191,7 +191,7 @@ make logs
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `GUNICORN_WORKERS` | Auto (2–8) | Override worker count |
+| `GUNICORN_WORKERS` | 2 | Worker processes. Raise for more concurrent traffic. |
 | `GUNICORN_LOG_LEVEL` | `info` | Logging verbosity: debug, info, warning, error |
 | `GUNICORN_RELOAD` | `false` | Set to `true` for auto-reload during development |
 
