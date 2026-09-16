@@ -24,12 +24,72 @@ preventing accidental lockouts on session-less code paths.
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Permission
+from django.db.models import Q
 
 from horilla.horilla_middlewares import _thread_locals, get_selected_company
 
 
+def resolve_login_user(identifier):
+    """
+    Find the account for a login or password-reset identifier.
+
+    Django only authenticates against ``username``. Employees are created with
+    username = email, but HR often later changes the employee/work email or
+    the username, and the login form placeholder looks like an email. Match
+    username, user email, personal email, or work email (case-insensitive).
+    Returns None when the identifier is empty or ambiguous.
+    """
+    identifier = (identifier or "").strip()
+    if not identifier:
+        return None
+
+    from horilla_auth.models import HorillaUser
+
+    user = HorillaUser.objects.filter(username=identifier).first()
+    if user:
+        return user
+
+    user = HorillaUser.objects.filter(username__iexact=identifier).first()
+    if user:
+        return user
+
+    email_matches = list(HorillaUser.objects.filter(email__iexact=identifier)[:2])
+    if len(email_matches) == 1:
+        return email_matches[0]
+    if len(email_matches) > 1:
+        return None
+
+    from employee.models import Employee
+
+    employees = list(
+        Employee.objects.entire()
+        .filter(
+            Q(email__iexact=identifier)
+            | Q(employee_work_info__email__iexact=identifier)
+        )
+        .select_related("employee_user_id")[:2]
+    )
+    users = [emp.employee_user_id for emp in employees if emp.employee_user_id_id]
+    if len(users) == 1:
+        return users[0]
+    return None
+
+
 class CompanyScopedBackend(ModelBackend):
     """ModelBackend with per-company group permission resolution."""
+
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        user = super().authenticate(
+            request, username=username, password=password, **kwargs
+        )
+        if user:
+            return user
+        resolved = resolve_login_user(username)
+        if resolved is None or resolved.username == username:
+            return None
+        return super().authenticate(
+            request, username=resolved.username, password=password, **kwargs
+        )
 
     def _get_group_permissions(self, user_obj):
         if not getattr(settings, "COMPANY_SCOPED_PERMISSIONS", False):

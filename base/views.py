@@ -804,7 +804,7 @@ def login_user(request):
     Handles user login and authentication.
     """
     if request.method == "POST":
-        username = request.POST.get("username")
+        username = (request.POST.get("username") or "").strip()
         password = request.POST.get("password")
         next_url = request.GET.get("next", "/")
         query_params = request.GET.dict()
@@ -819,8 +819,11 @@ def login_user(request):
             # which is what turns a password-guessing attempt into a targeted
             # one. Blocked users are told to contact their administrator via
             # the same text rather than being confirmed as real accounts.
+            logger.warning("Login failed for identifier %s", username)
             messages.error(request, _("Invalid username or password."))
             return redirect("login")
+
+        logger.info("Login succeeded for user %s", user.username)
 
         employee = getattr(user, "employee_get", None)
         if employee is None:
@@ -897,8 +900,9 @@ class HorillaPasswordResetView(PasswordResetView):
             messages.error(self.request, _("Primary mail server is not configured"))
             return redirect("forgot-password")
 
-        username = form.cleaned_data["email"]
-        user = HorillaUser.objects.filter(username=username).first()
+        from base.auth_backends import resolve_login_user
+
+        user = resolve_login_user(form.cleaned_data["email"])
         if user:
             opts = {
                 "use_https": self.request.is_secure(),
@@ -940,8 +944,9 @@ class EmployeePasswordResetView(PasswordResetView):
                 messages.error(self.request, _("Primary mail server is not configured"))
                 return HorillaRedirect(self.request)
 
-            username = form.cleaned_data["email"]
-            user = HorillaUser.objects.filter(username=username).first()
+            from base.auth_backends import resolve_login_user
+
+            user = resolve_login_user(form.cleaned_data["email"])
             if user:
                 opts = {
                     "use_https": self.request.is_secure(),

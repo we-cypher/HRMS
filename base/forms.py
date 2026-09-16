@@ -3167,17 +3167,22 @@ class PassWordResetForm(forms.Form):
         Generate a one-use only link for resetting password and send it to the
         user.
         """
-        username = self.cleaned_data["email"]
-        user = HorillaUser.objects.get(username=username)
-        employee = user.employee_get
-        email = employee.email
-        work_mail = None
-        try:
-            work_mail = employee.employee_work_info.email
-        except Exception as e:
-            pass
-        if work_mail:
-            email = work_mail
+        from base.auth_backends import resolve_login_user
+
+        user = resolve_login_user(self.cleaned_data["email"])
+        if user is None:
+            return
+        employee = getattr(user, "employee_get", None)
+        email = user.email
+        if employee is not None:
+            email = employee.email
+            work_mail = None
+            try:
+                work_mail = employee.employee_work_info.email
+            except Exception:
+                pass
+            if work_mail:
+                email = work_mail
 
         if not domain_override:
             current_site = get_current_site(request)

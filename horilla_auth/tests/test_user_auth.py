@@ -82,3 +82,33 @@ class LoginUserViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("login"))
         self.assertNotEqual(self.client.session.get("_auth_user_id"), str(orphan.pk))
+
+    def test_login_accepts_user_email(self):
+        response = self.client.post(
+            reverse("login"),
+            {"username": "view_login@test.horilla", "password": self.password},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_login_accepts_employee_email_when_username_differs(self):
+        self.user.username = "emp.short"
+        self.user.email = "old-login@test.horilla"
+        self.user.save(update_fields=["username", "email"])
+        self.employee.email = "current.employee@test.horilla"
+        self.employee.save(update_fields=["email"])
+
+        response = self.client.post(
+            reverse("login"),
+            {"username": "current.employee@test.horilla", "password": self.password},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_login_accepts_username_case_insensitively(self):
+        response = self.client.post(
+            reverse("login"),
+            {"username": "VIEW_LOGIN", "password": self.password},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
