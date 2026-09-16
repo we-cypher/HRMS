@@ -104,6 +104,45 @@
         .dark .ess-period-picker input[type="date"] {
             color-scheme: dark;
         }
+        .ess-apply-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            background: var(--ess-indigo);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .ess-apply-btn:hover {
+            filter: brightness(0.95);
+            color: #fff;
+            text-decoration: none;
+        }
+        .ess-apply-tile {
+            padding: 14px 16px;
+            border: 1px solid rgba(128, 128, 128, 0.12);
+            border-radius: 12px;
+            background: #fff;
+            margin-bottom: 14px;
+        }
+        .dark .ess-apply-tile {
+            background: #161616;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .ess-apply-tile__label {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+        .ess-apply-tile__value {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 4px 0 10px;
+        }
 
         /* ── KPI Grid ── */
         .ess-kpi-grid {
@@ -737,6 +776,17 @@
                 <div class="ess-header__date" id="essHeaderDate"></div>
             </div>
             <div class="ess-header__actions">
+                <a
+                    class="ess-apply-btn"
+                    href="#"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'leave-request-create' %}"
+                    hx-target="#genericModalBody"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    {% trans "Apply Leave" %}
+                </a>
                 <div class="ess-period-picker" hidden>
                     <button class="ess-period-preset" data-preset="this_month">
                         {% trans "This Month" %}
@@ -908,6 +958,20 @@
 
             <!-- Right sidebar -->
             <div class="ess-sidebar">
+                <div class="ess-apply-tile">
+                    <div class="ess-apply-tile__label">{% trans "Leave balance" %}</div>
+                    <div class="ess-apply-tile__value" id="essApplyLeaveDays">—</div>
+                    <a
+                        class="ess-apply-btn"
+                        href="#"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-get="{% url 'leave-request-create' %}"
+                        hx-target="#genericModalBody"
+                    >
+                        {% trans "Apply Leave" %}
+                    </a>
+                </div>
                 <!-- Recent Leave Requests -->
                 <div class="ess-info-panel">
                     <div class="ess-info-panel__header">
@@ -1096,6 +1160,10 @@
                     kpiCard('purple', iconGoals, '{% trans "Open Goals"|escapejs %}',
                             d.open_objectives, '{% trans "active objectives"|escapejs %}',
                             '{% url "objective-list-view" %}?open_tab=1&archive=false');
+                    var daysEl = document.getElementById('essApplyLeaveDays');
+                    if (daysEl) {
+                        daysEl.textContent = (d.total_available_leave != null ? d.total_available_leave : 0) + ' {% trans "days"|escapejs %}';
+                    }
                 })
                 .catch(function () {});
             }

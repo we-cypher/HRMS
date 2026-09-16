@@ -544,6 +544,23 @@ def dashboard_kpi_data(request):
     except Exception:
         pass
 
+    my_available_leave = 0.0
+    my_pending_leave = 0
+    try:
+        from leave.models import AvailableLeave, LeaveRequest
+
+        me = getattr(request.user, "employee_get", None)
+        if me:
+            my_pending_leave = LeaveRequest.objects.filter(
+                employee_id=me, status="requested"
+            ).count()
+            my_available_leave = sum(
+                float(row.available_days or 0) + float(row.carryforward_days or 0)
+                for row in AvailableLeave.objects.filter(employee_id=me)
+            )
+    except Exception:
+        pass
+
     return JsonResponse(
         {
             "total_employees": total_employees,
@@ -556,6 +573,8 @@ def dashboard_kpi_data(request):
             "pending_leaves": pending_leaves,
             "new_joiners": new_joiners,
             "open_recruitments": open_recruitments,
+            "my_available_leave": round(my_available_leave, 1),
+            "my_pending_leave": my_pending_leave,
             "date": today.isoformat(),
             "is_team_scoped": scoped_ids is not None,
         }

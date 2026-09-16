@@ -303,6 +303,26 @@
 
     /* Collapsed: show the brand logo centred at the top of the rail, overriding
        the general oh-sidebar-label opacity:0 rule just for this element. */
+    /* Theme-aware brand mark: navy wordmark on light, white on dark. */
+    img.oh-brand-logo {
+        height: 22px;
+        width: auto;
+        max-width: 118px;
+        object-fit: contain;
+        border-radius: 0;
+    }
+    img.oh-brand-logo--on-dark {
+        display: none !important;
+    }
+    html.dark img.oh-brand-logo--on-light,
+    body.dark img.oh-brand-logo--on-light {
+        display: none !important;
+    }
+    html.dark img.oh-brand-logo--on-dark,
+    body.dark img.oh-brand-logo--on-dark {
+        display: inline-block !important;
+    }
+
     #sidebar:not(:hover):not(.sidebar-pinned) > div > div:first-child img.oh-sidebar-label {
         flex: 0 0 auto !important;
         width: 2rem !important;
@@ -567,10 +587,16 @@
             <div class="flex items-center gap-2 min-w-0 flex-1">
                 {% if request.session.selected_company_instance %}
                     <img
-                        src="{{ request.session.selected_company_instance.icon }}"
-                        class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
+                        src="{% static 'images/ui/auth-logo.png' %}"
+                        class="oh-sidebar-label oh-brand-logo oh-brand-logo--on-light flex-shrink-0"
                         title="{{ request.session.selected_company_instance.company }}"
-                        alt="{{ request.session.selected_company_instance.company }}"
+                        alt="WePeople"
+                    >
+                    <img
+                        src="{% static 'horilla_theme/assets/img/horilla-logo.png' %}"
+                        class="oh-sidebar-label oh-brand-logo oh-brand-logo--on-dark flex-shrink-0"
+                        title="{{ request.session.selected_company_instance.company }}"
+                        alt="WePeople"
                     >
                     <div class="oh-sidebar__company-details oh-sidebar-label min-w-0">
                         <span
@@ -583,9 +609,14 @@
                     </div>
                 {% else %}
                     <img
-                        src="{% if request.user.employee_get.employee_work_info.company_id.icon %}{{ request.user.employee_get.employee_work_info.company_id.icon.url }}{% else %}/static/horilla_theme/assets/img/horilla-logo.png{% endif %}"
-                        alt="{% trans 'Company logo' %}"
-                        class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
+                        src="{% static 'images/ui/auth-logo.png' %}"
+                        alt="WePeople"
+                        class="oh-sidebar-label oh-brand-logo oh-brand-logo--on-light flex-shrink-0"
+                    >
+                    <img
+                        src="{% static 'horilla_theme/assets/img/horilla-logo.png' %}"
+                        alt="WePeople"
+                        class="oh-sidebar-label oh-brand-logo oh-brand-logo--on-dark flex-shrink-0"
                     >
                     <div class="oh-sidebar__company-details oh-sidebar-label min-w-0">
                         <span

@@ -1867,6 +1867,11 @@
                 if (!perm) return `<div class="md-kpi-card">${body}${subHtml}</div>`;
                 return `<div class="md-kpi-card"><a href="${href}" class="md-kpi-card__hit">${body}</a>${subHtml}</div>`;
             };
+            const kpiModalCard = (hxUrl, colorClass, svg, label, value, sub) => {
+                const body = `<div class="md-kpi-card__icon ${colorClass}">${svg}</div><div class="md-kpi-card__label">${label}</div><div class="md-kpi-card__value">${value}</div>`;
+                const subHtml = `<div class="md-kpi-card__sub">${sub}</div>`;
+                return `<div class="md-kpi-card"><a href="#" class="md-kpi-card__hit" data-toggle="oh-modal-toggle" data-target="#genericModal" hx-get="${hxUrl}" hx-target="#genericModalBody">${body}</a>${subHtml}</div>`;
+            };
 
             document.getElementById('md-date').textContent = new Date().toLocaleDateString('en-US', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -2350,11 +2355,25 @@
                         const attSvg   = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>';
                         const leaveSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
                         const recruSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
+                        const applyLeaveUrl = "{% url 'leave-request-create' %}";
+                        const applyLeaveCard = kpiModalCard(
+                            applyLeaveUrl,
+                            'md-kpi-card__icon--purple',
+                            leaveSvg,
+                            '{% trans "Apply Leave"|escapejs %}',
+                            data.my_available_leave != null ? data.my_available_leave : 0,
+                            data.my_pending_leave > 0
+                                ? '<span class="md-badge md-badge--amber">' + data.my_pending_leave + ' {% trans "pending"|escapejs %}</span>'
+                                : '<span style="opacity:0.5">{% trans "Available days · tap to apply"|escapejs %}</span>'
+                        );
                         document.getElementById('md-kpi-grid').innerHTML =
                             kpiCard("{% url 'employee-view' %}?is_active=True&filter_applied=on",   PERM.employee,    'md-kpi-card__icon--indigo', empSvg,   '{% trans "Total Employees"|escapejs %}',   data.total_employees,   data.new_joiners > 0 ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month"|escapejs %}</span>' : '<span style="opacity:0.5">{% trans "No new joiners"|escapejs %}</span>') +
                             kpiCard("{% url 'attendance-view' %}?attendance_date={% now 'Y-m-d' %}&filter_applied=on",  PERM.attendance,  'md-kpi-card__icon--green',  attSvg,   '{% trans "Present Today"|escapejs %}',     data.present_today,     '<span class="md-badge ' + (data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber') + '">' + data.attendance_rate + '% {% trans "of expected"|escapejs %}</span>' + (data.not_checked_in > 0 ? ' <span class="md-badge md-badge--amber">' + data.not_checked_in + ' {% trans "not checked in"|escapejs %}</span>' : '')) +
                             kpiCard(`{% url 'request-view' %}?status=approved&today_leave=true&filter_applied=on`,     PERM.leave,       'md-kpi-card__icon--amber',  leaveSvg, '{% trans "On Leave"|escapejs %}',           data.on_leave,          data.pending_leaves > 0 ? '<a href="{% url "request-view" %}?status=requested&filter_applied=on" class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending"|escapejs %}</a>' : '<span style="opacity:0.5">{% trans "No pending"|escapejs %}</span>') +
-                            (PERM.recruitment ? kpiCard("{% url 'recruitment-view' %}?closed=false&filter_applied=on", true, 'md-kpi-card__icon--purple', recruSvg, '{% trans "Open Recruitments"|escapejs %}', data.open_recruitments, '<span style="opacity:0.5">{% trans "Active hiring"|escapejs %}</span>') : '');
+                            (PERM.recruitment ? kpiCard("{% url 'recruitment-view' %}?closed=false&filter_applied=on", true, 'md-kpi-card__icon--purple', recruSvg, '{% trans "Open Recruitments"|escapejs %}', data.open_recruitments, '<span style="opacity:0.5">{% trans "Active hiring"|escapejs %}</span>') : applyLeaveCard);
+                        if (window.htmx) {
+                            htmx.process(document.getElementById('md-kpi-grid'));
+                        }
                     });
             }
             loadKpiCards();
